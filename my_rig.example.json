@@ -1,0 +1,68 @@
+{
+  "master_sounds": [
+    {
+      "name": "Clean",
+      "mapping": {
+        "program_change": 28,
+        "bank_cc_0": 0,
+        "bank_cc_32": 2,
+        "control_change": 34,
+        "control_value": 1,
+        "channel": 1
+      }
+    },
+    {
+      "name": "Crunch",
+      "mapping": {
+        "program_change": 21,
+        "bank_cc_0": 0,
+        "bank_cc_32": 2,
+        "control_change": 34,
+        "control_value": 3,
+        "channel": 1
+      }
+    },
+    {
+      "name": "Lead",
+      "mapping": {
+        "program_change": 24,
+        "bank_cc_0": 0,
+        "bank_cc_32": 2,
+        "control_change": 16,
+        "control_value": 87,
+        "channel": 1
+      }
+    }
+  ],
+  "songs": [
+    {
+      "name": "Titanic",
+      "slots": [
+        { "name": "Intro", "master_sound": "Clean" },
+        { "name": "Verse", "master_sound": "Clean" },
+        { "name": "Chorus", "master_sound": "Crunch" },
+        { "name": "Bridge", "master_sound": "Clean" },
+        { "name": "Solo", "master_sound": "Lead" },
+        { "name": "Outro", "master_sound": "Clean" }
+      ]
+    },
+    {
+      "name": "Paloma",
+      "slots": [
+        { "name": "Intro", "master_sound": "Crunch" },
+        { "name": "Verse", "master_sound": "Clean" },
+        { "name": "Chorus", "master_sound": "Lead" },
+        { "name": "Bridge", "master_sound": "Clean" },
+        { "name": "Solo", "master_sound": "Lead" },
+        { "name": "Outro", "master_sound": "Crunch" }
+      ]
+    }
+  ],
+  "setlists": [
+    {
+      "name": "Setlist Live",
+      "song_names": ["Titanic", "Paloma"]
+    }
+  ],
+  "source_path": null
+}
