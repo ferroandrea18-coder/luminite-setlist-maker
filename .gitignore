@@ -8,3 +8,14 @@ patched_backup.bak
 my_rig.json
 
 .streamlit/
+
+# Build artifacts
+build/
+dist*/
+
+# Diagnostic scripts (temporary)
+diag_*.py
+compare*.py
+verify_fix.py
+test_fixes.py
+_test_*.py

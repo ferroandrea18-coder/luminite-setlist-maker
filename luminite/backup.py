@@ -377,6 +377,14 @@ class LuminiteBackup:
     def set_setlist_song_ids(self, setlist_index: int, song_ids: list[int]) -> SetlistRecord:
         if not (1 <= setlist_index <= self.layout.setlist_count):
             raise ValueError(f"Setlist index must be between 1 and {self.layout.setlist_count}")
+        # Guard: don't write beyond the physically allocated slot-map area
+        slot_bytes = self.layout.setlist_slots_per_list * 4
+        max_slot_maps = max(0, (self.layout.exp_base - self.layout.setlist_slots_base) // slot_bytes)
+        if setlist_index > max_slot_maps:
+            raise ValueError(
+                f"Setlist index {setlist_index} exceeds the physical slot-map area "
+                f"(only {max_slot_maps} setlist slot-maps fit before exp_base 0x{self.layout.exp_base:04X})"
+            )
         if len(song_ids) > self.layout.setlist_slots_per_list:
             raise ValueError(f"Setlist can contain at most {self.layout.setlist_slots_per_list} songs")
         for song_id in song_ids:
@@ -457,6 +465,28 @@ class LuminiteBackup:
             self._data[offset] = 0xB0 | (channel - 1)
         self._data[offset + 1] = cc_number
         self._data[offset + 2] = cc_value
+
+    def patch_preset_midi_command(
+        self,
+        preset_index: int,
+        command_index: int,
+        status: int,
+        data_1: int,
+        data_2: int,
+        channel: int = 1,
+    ) -> MidiMessage:
+        """Write any MIDI message (CC or PC) into a preset command slot."""
+        if not (1 <= channel <= 16):
+            raise ValueError("MIDI channel must be between 1 and 16")
+        preset = self.parse_presets()[preset_index - 1]
+        if command_index < 1 or command_index > len(preset.commands):
+            raise IndexError(f"Command index {command_index} out of range for preset '{preset.name}'")
+        command = preset.commands[command_index - 1]
+        status_byte = (status & 0xF0) | (channel - 1)
+        self._data[command.offset] = status_byte
+        self._data[command.offset + 1] = data_1 & 0x7F
+        self._data[command.offset + 2] = data_2 & 0x7F
+        return self._decode_midi_message(command.offset)  # type: ignore[return-value]
 
     def patch_preset_control_change(self, preset_index: int, command_index: int, cc_number: int, cc_value: int) -> MidiMessage:
         preset = self.parse_presets()[preset_index - 1]
